@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECDSA Digital Signature Demo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9fb;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      color: #1f5c9b;
+    }
+    .section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      border-left: 4px solid #1f5c9b;
+      background: #f1f6fc;
+      border-radius: 8px;
+    }
+    .codebox {
+      background: #eee;
+      padding: 1rem;
+      font-family: monospace;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    .valid {
+      color: green;
+      font-weight: bold;
+    }
+    .invalid {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 ECDSA Digital Signature System</h1>
+    <p>This interface visually demonstrates how digital signatures work using Elliptic Curve Cryptography (ECC). It includes:</p>
+    <ul>
+      <li><strong>Key Generation</strong> - Create private/public key pair.</li>
+      <li><strong>Signing</strong> - Sign a message with the private key.</li>
+      <li><strong>Verification</strong> - Verify the signature with the public key.</li>
+    </ul>
+
+    <div class="section">
+      <h2>🔑 Key Generation</h2>
+      <p>The private key <code>d</code> is randomly generated, and the public key <code>Q = dG</code> is derived using elliptic curve multiplication.</p>
+      <div class="codebox">
+        Private Key (d): <br/>
+        <code>8f2a559490a4...c5f</code><br/><br/>
+        Public Key (Q): <br/>
+        <code>0461df64b7cc...ffe</code>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✍️ Signing Module</h2>
+      <p>The message is hashed using SHA-256. Using the private key and this hash, a digital signature composed of values <code>r</code> and <code>s</code> is generated.</p>
+      <div class="codebox">
+        Message: <code>Hello world</code><br/>
+        Message Hash: <code>a592...3f1</code><br/><br/>
+        Signature r: <code>9d1a...e0</code><br/>
+        Signature s: <code>cc44...1a</code>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔍 Verification Module</h2>
+      <p>The verifier checks the message hash, signature and public key to validate the signature.</p>
+      <div class="codebox">
+        <span class="valid">✅ Signature is VALID</span>
+        <!-- or -->
+        <!-- <span class="invalid">❌ Signature is INVALID</span> -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>
