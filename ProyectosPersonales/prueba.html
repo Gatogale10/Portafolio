@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diagrama de Voronoi - CDMX</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6/d3-delaunay.min.js"></script>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+<canvas id="voronoi-canvas"></canvas>
+
+<script>
+  // Crear mapa centrado en la Ciudad de México
+  const map = L.map('map').setView([19.4326, -99.1332], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const canvas = document.getElementById('voronoi-canvas');
+  const ctx = canvas.getContext('2d');
+  let points = [];
+
+  function updateCanvasSize() {
+    const size = map.getSize();
+    canvas.width = size.x;
+    canvas.height = size.y;
+  }
+
+  map.on('resize move zoom', () => {
+    updateCanvasSize();
+    drawVoronoi();
+  });
+
+  updateCanvasSize();
+
+  map.on('click', function(e) {
+    const latlng = e.latlng;
+    points.push(latlng);
+    drawVoronoi();
+  });
+
+  function drawVoronoi() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (points.length < 2) return;
+
+    const projectedPoints = points.map(p => map.latLngToContainerPoint(p));
+    const delaunay = d3.Delaunay.from(projectedPoints.map(p => [p.x, p.y]));
+    const voronoi = delaunay.voronoi([0, 0, canvas.width, canvas.height]);
+
+    for (let i = 0; i < projectedPoints.length; i++) {
+      const cell = voronoi.cellPolygon(i);
+      if (cell) {
+        ctx.beginPath();
+        ctx.moveTo(cell[0][0], cell[0][1]);
+        for (const [x, y] of cell.slice(1)) {
+          ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = "rgba(100, 150, 255, 0.2)";
+        ctx.fill();
+      }
+    }
+
+    for (const p of projectedPoints) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+      ctx.fillStyle = "red";
+      ctx.fill();
+    }
+  }
+</script>
+
+</body>
+</html>
